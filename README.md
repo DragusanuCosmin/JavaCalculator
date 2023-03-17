@@ -13,7 +13,9 @@ Once you have Java installed, you can clone or download the Java Calculator repo
 To use the Java Calculator, open a terminal or command prompt and navigate to the directory where the JavaCalculator.jar file is located. Then, enter the following command:
 
 Copy code
+
 java -jar JavaCalculator.jar
+
 The calculator program will launch and you can start performing calculations.
 
 # Features
