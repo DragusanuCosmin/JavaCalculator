@@ -1,4 +1,4 @@
-#Java Calculator
+# Java Calculator
 
 The Java Calculator is a simple console-based calculator program written in Java. It supports basic arithmetic operations such as addition, subtraction, multiplication, and division, as well as advanced operations such as square root, power, and logarithm.
 
