@@ -18,11 +18,11 @@ public class Main {
     public static char opperation='0';
     public static DecimalFormat formatter = new DecimalFormat("0.#####E0");
     public static JFrame f = new JFrame();
+    private static int mouseX, mouseY;
 
     public static void main(String[] args) {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setUndecorated(true);
-        f.setLocation(screenSize.width / 2 - screenSize.width / 6, screenSize.height / 2 - screenSize.height / 6);
         ImageIcon icon = new ImageIcon("icon.png");
         Image image = icon.getImage();
         f.setIconImage(image);
@@ -67,6 +67,23 @@ public class Main {
         f.setJMenuBar(new JMenuBar() {
             { add(titleBar); }
         });
+        titleBar.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                // Get the current mouse position
+                mouseX = e.getX();
+                mouseY = e.getY();
+            }
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                Point p = f.getLocation();
+
+                // Calculate the new position based on the mouse movement
+                int x = p.x + evt.getX() - mouseX;
+                int y = p.y + evt.getY() - mouseY;
+
+                // Set the new position of the JFrame
+                f.setLocation(x, y);
+            }
+            });
         for (int i = 0; i < 6; i++)
             for (int j = 0; j < 4; j++) {
                 Buttons[i][j] = new JButton();
@@ -123,6 +140,7 @@ public class Main {
                 ButtonPanel.add(Buttons[i][j]);
         GridBagLayout gridBagLayout = new GridBagLayout();
         Graph panel = new Graph();
+        f.setBounds(screenSize.width/2-screenSize.width/14,screenSize.height/2-screenSize.height/4,screenSize.width/7, screenSize.height/2);
         f.setLayout(gridBagLayout);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -148,6 +166,7 @@ public class Main {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 f.remove(panel);
                 f.repaint();
+                f.setBounds(screenSize.width/2-screenSize.width/14,screenSize.height/2-screenSize.height/4,screenSize.width/7, screenSize.height/2);
                 f.setLayout(gridBagLayout);
                 GridBagConstraints constraints = new GridBagConstraints();
                 constraints.gridx = 0;
@@ -178,11 +197,11 @@ public class Main {
                 f.remove(ButtonPanel);
                 f.repaint();
                 f.getContentPane().setLayout(new BorderLayout());
+                f.setSize(screenSize.width/2, screenSize.height/2);
                 f.getContentPane().add(panel, BorderLayout.CENTER);
                 f.setVisible(true);
             }
         });
-        f.setBounds(screenSize.width/2-screenSize.width/14,screenSize.height/2-screenSize.height/4,screenSize.width/7, screenSize.height/2);
         for (int i = 0; i < 6; i++)
             for (int j = 0; j < 4; j++) {
                 int finalI = i;
@@ -258,19 +277,29 @@ public class Main {
 
                                     case 1 -> {
                                         if (florint) {
-                                            if (lx == 0) {
-                                                PrintLabel.setText("Cannot divide by 0!");
-                                            } else {
-                                                dx = 1 / (double) lx;
-                                                florint = false;
+                                            opperation='/';
+                                            seclx=1;
+                                            if(calc()!="Cannot divide by 0!"){
+                                                opperation='0';
+                                                PrintLabel2.setText(String.valueOf(seclx) + opperation + lx);
+                                                lx = Long.parseLong(calc());
+                                                PrintLabel.setText(String.valueOf(lx));
+                                            }
+                                            else{
+                                                PrintLabel.setText(calc());
+                                            }
+                                        }
+                                        else {
+                                            if (nrofdig == 0)
+                                                dx = (double) lx;
+                                            if(calc()!="Cannot divide by 0!") {
+                                                PrintLabel2.setText(String.valueOf(secdx) + opperation + dx);
+                                                dx = Double.parseDouble(calc());
                                                 PrintLabel.setText(String.valueOf(dx));
                                             }
-
-                                        } else dx = 1 / dx;
-                                        if (dx == 0) {
-                                            PrintLabel.setText("Cannot divide by 0!");
-                                        } else {
-                                            PrintLabel.setText(String.valueOf(dx));
+                                            else{
+                                                PrintLabel.setText(calc());
+                                            }
                                         }
                                     }
                                     case 2 -> {
@@ -657,17 +686,26 @@ public class Main {
                                     }
                                     case 5 -> {
                                         if (florint) {
-                                            PrintLabel2.setText(String.valueOf(seclx) + opperation + lx);
-                                            lx = Long.parseLong(calc());
-                                            opperation = '0';
-                                            PrintLabel.setText(String.valueOf(lx));
-
+                                            if(calc()!="Cannot divide by 0!") {
+                                                PrintLabel2.setText(String.valueOf(seclx) + opperation + lx);
+                                                lx = Long.parseLong(calc());
+                                                opperation = '0';
+                                                PrintLabel.setText(String.valueOf(lx));
+                                            }
+                                            else {
+                                                PrintLabel.setText(calc());
+                                            }
                                         } else {
                                             if (nrofdig == 0)
                                                 dx = (double) lx;
-                                            PrintLabel2.setText(String.valueOf(secdx) + opperation + dx);
-                                            dx = Double.parseDouble(calc());
-                                            PrintLabel.setText(String.valueOf(dx));
+                                            if(calc()!="Cannot divide by 0!") {
+                                                PrintLabel2.setText(String.valueOf(secdx) + opperation + dx);
+                                                dx = Double.parseDouble(calc());
+                                                PrintLabel.setText(String.valueOf(dx));
+                                            }
+                                            else{
+                                                PrintLabel.setText(calc());
+                                            }
                                         }
                                     }
                                 }
@@ -700,18 +738,35 @@ public class Main {
                     result = String.valueOf(secdx * dx);
             }
             case '/' -> {
-                if (florint)
-                    result = String.valueOf(seclx / lx);
-                else
-                    result = String.valueOf(secdx / dx);
+                if (florint) {
+                    if (lx != 0) {
+                        result = String.valueOf(seclx / lx);
+                    } else {
+                        result = "Cannot divide by 0!";
+                    }
+                } else {
+                    if (dx != 0) {
+                        result = String.valueOf(secdx / dx);
+                    } else {
+                        result="Cannot divide by 0!";
+                    }
+
+                }
             }
             case '%'-> {
                 if (florint) {
-                    if (seclx != 0 && lx != 0)
+                    if (lx != 0) {
                         result = String.valueOf(seclx % lx);
+                    } else {
+                        result = "Cannot divide by 0!";
+                    }
                 } else {
-                    if (secdx != 0 && dx != 0)
+                    if (dx != 0) {
                         result = String.valueOf(secdx % dx);
+                    } else {
+                        result="Cannot divide by 0!";
+                    }
+
                 }
             }
         }
