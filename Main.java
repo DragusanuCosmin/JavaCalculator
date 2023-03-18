@@ -1,7 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 public class Main {
     public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -12,22 +16,66 @@ public class Main {
     public static long seclx=0;
     public static double secdx=0;
     public static char opperation='0';
+    public static DecimalFormat formatter = new DecimalFormat("0.#####E0");
 
     public static void main(String[] args) {
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setUndecorated(true);
         f.setLocation(screenSize.width / 2 - screenSize.width / 6, screenSize.height / 2 - screenSize.height / 6);
+        ImageIcon icon = new ImageIcon("icon.png");
+        Image image = icon.getImage();
+        f.setIconImage(image);
         f.setVisible(true);
-
         JButton[][] Buttons = new JButton[6][4];
+        JPanel titleBar = new JPanel();
+        titleBar.setPreferredSize(new Dimension(f.getWidth(), 32));
+        titleBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        titleBar.setBackground(Color.darkGray);
+        JButton exitButton = new JButton("x");
+        exitButton.setFocusable(false);
+        exitButton.setForeground(Color.white);
+        exitButton.setBorderPainted(false);
+        exitButton.addActionListener(e -> System.exit(0));
+        exitButton.setBackground(new Color(50,50,50));
+        JButton minimizeButton = new JButton("-");
+        minimizeButton.addActionListener(e -> f.setState(Frame.ICONIFIED));
+        minimizeButton.setFocusable(false);
+        minimizeButton.setForeground(Color.white);
+        minimizeButton.setBorderPainted(false);
+        minimizeButton.setBackground(new Color(50,50,50));
+        JButton calcButton=new JButton();
+        calcButton.setIcon(new ImageIcon("1icon.png"));
+        calcButton.setSize(16,16);
+        calcButton.setBackground(titleBar.getBackground());
+        calcButton.setFocusable(false);
+        calcButton.setForeground(Color.white);
+        calcButton.setBorderPainted(false);
+        JButton graphButton=new JButton();
+        graphButton.setIcon(new ImageIcon("graph.png"));
+        graphButton.setSize(16,16);
+        graphButton.setBackground(titleBar.getBackground());
+        graphButton.setFocusable(false);
+        graphButton.setForeground(Color.white);
+        graphButton.setBorderPainted(false);
+
+        titleBar.setLayout(new FlowLayout(FlowLayout.LEFT));
+        titleBar.add(calcButton);
+        titleBar.add(graphButton);
+        titleBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        titleBar.add(minimizeButton);
+        titleBar.add(exitButton);
+        f.setJMenuBar(new JMenuBar() {
+            { add(titleBar); }
+        });
         for (int i = 0; i < 6; i++)
             for (int j = 0; j < 4; j++) {
                 Buttons[i][j] = new JButton();
                 Buttons[i][j].setPreferredSize(new Dimension(60, 60));
                 Buttons[i][j].setFocusable(false);
-                Buttons[i][j].setBackground(Color.black);
+                Buttons[i][j].setBackground(new Color(20,20,20));
                 Buttons[i][j].setForeground(Color.white);
+                Buttons[i][j].setRolloverEnabled(false);
             }
         Buttons[0][3].setText("DEL");
         Buttons[1][3].setText("+");
@@ -75,6 +123,7 @@ public class Main {
             for (int j = 0; j < 4; j++)
                 ButtonPanel.add(Buttons[i][j]);
         GridBagLayout gridBagLayout = new GridBagLayout();
+        Graph graph = new Graph();
         f.setLayout(gridBagLayout);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -89,41 +138,92 @@ public class Main {
         constraints.weighty = 0.0;
         constraints.fill = GridBagConstraints.HORIZONTAL;
         f.add(PrintPanel, constraints);
+
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
         constraints.fill = GridBagConstraints.BOTH;
-        JPanel titleBar = new JPanel();
-        titleBar.setPreferredSize(new Dimension(f.getWidth(), 20));
-        titleBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        titleBar.setBackground(Color.darkGray);
-        JButton exitButton = new JButton("x");
-        exitButton.setBackground(titleBar.getBackground());
-        exitButton.setFocusable(false);
-        exitButton.setForeground(Color.white);
-        exitButton.addActionListener(e -> System.exit(0));
-        JButton minimizeButton = new JButton("-");
-        minimizeButton.addActionListener(e -> f.setState(Frame.ICONIFIED));
-        minimizeButton.setBackground(titleBar.getBackground());
-        minimizeButton.setFocusable(false);
-        minimizeButton.setForeground(Color.white);
-        titleBar.add(minimizeButton);
-        titleBar.add(exitButton);
-        f.setJMenuBar(new JMenuBar() {
-            { add(titleBar); }
-        });
         f.add(ButtonPanel, constraints);
+        calcButton.addMouseListener(new MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                f.setLayout(gridBagLayout);
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 0;
+                constraints.weightx = 1.0;
+                constraints.weighty = 0.0;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                f.add(PrintPanel2, constraints);
+                constraints.gridx = 0;
+                constraints.gridy = 1;
+                constraints.weightx = 1.0;
+                constraints.weighty = 0.0;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                f.add(PrintPanel, constraints);
+
+                constraints.gridx = 0;
+                constraints.gridy = 2;
+                constraints.weightx = 1.0;
+                constraints.weighty = 1.0;
+                constraints.fill = GridBagConstraints.BOTH;
+                f.add(ButtonPanel, constraints);
+            }
+        });
+        graphButton.addMouseListener(new MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                f.remove(PrintPanel);
+                f.remove(PrintPanel2);
+                f.remove(ButtonPanel);
+                f.setContentPane(graph);
+                f.pack();
+                f.repaint();
+                int delay = 100;
+                Timer timer = new Timer(delay, new ActionListener() {
+                    int x = 0;
+                    int y = 0;
+                    public void actionPerformed(ActionEvent evt) {
+                        graph.addPoint(x++, y++);
+                    }
+                });
+                timer.start();
+            }
+        });
         f.setBounds(screenSize.width/2-screenSize.width/14,screenSize.height/2-screenSize.height/4,screenSize.width/7, screenSize.height/2);
         for (int i = 0; i < 6; i++)
             for (int j = 0; j < 4; j++) {
                 int finalI = i;
                 int finalJ = j;
                 Buttons[i][j].addMouseListener(new MouseAdapter() {
+                    public void mouseEntered(java.awt.event.MouseEvent evt) {
+                        Buttons[finalI][finalJ].setBackground(Color.black);
+                    }
+                    public void mouseExited(java.awt.event.MouseEvent evt) {
+                        Buttons[finalI][finalJ].setBackground(new Color(20,20,20));
+                    }
+                    public void mouseReleased(java.awt.event.MouseEvent evt) {
+                        Buttons[finalI][finalJ].setBackground(Color.black);
+                    }
                     @Override
                     public void mousePressed(MouseEvent e) {
+                        Buttons[finalI][finalJ].setBackground(new Color(30,30,30));
                         if(secdx==0||seclx==0)
                             PrintLabel2.setText(" ");
+                        if (BigDecimal.valueOf(lx).abs().compareTo(BigDecimal.valueOf(Long.MAX_VALUE).divide(BigDecimal.TEN)) > 0) {
+                            PrintLabel.setText(BigDecimal.valueOf(lx).toEngineeringString());
+                        }
+
+                        if (BigDecimal.valueOf(seclx).abs().compareTo(BigDecimal.valueOf(Long.MAX_VALUE).divide(BigDecimal.TEN)) > 0) {
+                            PrintLabel2.setText(BigDecimal.valueOf(seclx).toEngineeringString());
+                        }
+
+                        if (BigDecimal.valueOf(dx).abs().compareTo(BigDecimal.valueOf(Double.MAX_VALUE).divide(BigDecimal.TEN)) > 0) {
+                            PrintLabel2.setText(BigDecimal.valueOf(dx).toEngineeringString());
+                        }
+
+                        if (BigDecimal.valueOf(secdx).abs().compareTo(BigDecimal.valueOf(Double.MAX_VALUE).divide(BigDecimal.TEN)) > 0) {
+                            PrintLabel2.setText(BigDecimal.valueOf(secdx).toEngineeringString());
+                        }
                         switch (finalJ) {
                             case 0 -> {
                                 switch (finalI) {
