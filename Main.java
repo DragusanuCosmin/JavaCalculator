@@ -17,9 +17,9 @@ public class Main {
     public static double secdx=0;
     public static char opperation='0';
     public static DecimalFormat formatter = new DecimalFormat("0.#####E0");
+    public static JFrame f = new JFrame();
 
     public static void main(String[] args) {
-        JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setUndecorated(true);
         f.setLocation(screenSize.width / 2 - screenSize.width / 6, screenSize.height / 2 - screenSize.height / 6);
@@ -30,7 +30,6 @@ public class Main {
         JButton[][] Buttons = new JButton[6][4];
         JPanel titleBar = new JPanel();
         titleBar.setPreferredSize(new Dimension(f.getWidth(), 32));
-        titleBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
         titleBar.setBackground(Color.darkGray);
         JButton exitButton = new JButton("x");
         exitButton.setFocusable(false);
@@ -123,7 +122,7 @@ public class Main {
             for (int j = 0; j < 4; j++)
                 ButtonPanel.add(Buttons[i][j]);
         GridBagLayout gridBagLayout = new GridBagLayout();
-        Graph graph = new Graph();
+        Graph panel = new Graph();
         f.setLayout(gridBagLayout);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -147,6 +146,8 @@ public class Main {
         f.add(ButtonPanel, constraints);
         calcButton.addMouseListener(new MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
+                f.remove(panel);
+                f.repaint();
                 f.setLayout(gridBagLayout);
                 GridBagConstraints constraints = new GridBagConstraints();
                 constraints.gridx = 0;
@@ -175,18 +176,10 @@ public class Main {
                 f.remove(PrintPanel);
                 f.remove(PrintPanel2);
                 f.remove(ButtonPanel);
-                f.setContentPane(graph);
-                f.pack();
                 f.repaint();
-                int delay = 100;
-                Timer timer = new Timer(delay, new ActionListener() {
-                    int x = 0;
-                    int y = 0;
-                    public void actionPerformed(ActionEvent evt) {
-                        graph.addPoint(x++, y++);
-                    }
-                });
-                timer.start();
+                f.getContentPane().setLayout(new BorderLayout());
+                f.getContentPane().add(panel, BorderLayout.CENTER);
+                f.setVisible(true);
             }
         });
         f.setBounds(screenSize.width/2-screenSize.width/14,screenSize.height/2-screenSize.height/4,screenSize.width/7, screenSize.height/2);
