@@ -140,33 +140,39 @@ public class Main {
                 ButtonPanel.add(Buttons[i][j]);
         GridBagLayout gridBagLayout = new GridBagLayout();
         Graph panel = new Graph();
-        f.setBounds(screenSize.width/2-screenSize.width/14,screenSize.height/2-screenSize.height/4,screenSize.width/7, screenSize.height/2);
+        StringReader string=new StringReader();
+        f.setSize(screenSize.width/7, screenSize.height/2);
+        f.setLocation(screenSize.width/2-f.getWidth()/2,screenSize.height/2-f.getHeight()/2);
         f.setLayout(gridBagLayout);
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        f.add(PrintPanel2, constraints);
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.weightx = 1.0;
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        f.add(PrintPanel, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        f.add(ButtonPanel, constraints);
+            GridBagConstraints constraints = new GridBagConstraints();
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 1.0;
+            constraints.weighty = 0.0;
+            constraints.fill = GridBagConstraints.HORIZONTAL;
+            PrintPanel2.setVisible(true);
+            f.add(PrintPanel2, constraints);
+            constraints.gridx = 0;
+            constraints.gridy = 1;
+            constraints.weightx = 1.0;
+            constraints.weighty = 0.0;
+            constraints.fill = GridBagConstraints.HORIZONTAL;
+            PrintPanel.setVisible(true);
+            f.add(PrintPanel, constraints);
+            constraints.gridx = 0;
+            constraints.gridy = 2;
+            constraints.weightx = 1.0;
+            constraints.weighty = 1.0;
+            constraints.fill = GridBagConstraints.BOTH;
+            ButtonPanel.setVisible(true);
+            f.add(ButtonPanel, constraints);
+            f.repaint();
         calcButton.addMouseListener(new MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 f.remove(panel);
+                f.remove(string);
                 f.repaint();
-                f.setBounds(screenSize.width/2-screenSize.width/14,screenSize.height/2-screenSize.height/4,screenSize.width/7, screenSize.height/2);
+                f.setSize(screenSize.width/7, screenSize.height/2);
                 f.setLayout(gridBagLayout);
                 GridBagConstraints constraints = new GridBagConstraints();
                 constraints.gridx = 0;
@@ -192,12 +198,13 @@ public class Main {
         });
         graphButton.addMouseListener(new MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
+                f.setSize(screenSize.width/2, screenSize.height/2);
                 f.remove(PrintPanel);
                 f.remove(PrintPanel2);
                 f.remove(ButtonPanel);
                 f.repaint();
                 f.getContentPane().setLayout(new BorderLayout());
-                f.setSize(screenSize.width/2, screenSize.height/2);
+                f.getContentPane().add(string,BorderLayout.NORTH);
                 f.getContentPane().add(panel, BorderLayout.CENTER);
                 f.setVisible(true);
             }

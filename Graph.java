@@ -47,7 +47,7 @@ public class Graph extends JPanel {
         int height=getHeight();
         g2.drawLine(0, origin.y+height/2, width,origin.y+height/2);
         g2.drawLine(origin.x+width/2,0, origin.x+width/2, height);
-        for (int i = -1000; i <= 1000; i++) {
+        for (int i = -10000; i <= 10000; i++) {
             int x = origin.x + width / 2 + i * 50;
             g2.drawLine(x, origin.y + height / 2 - 5, x, origin.y + height / 2 + 5);
             g2.drawString(Integer.toString(i), x - 4, origin.y + height / 2 + 20);
