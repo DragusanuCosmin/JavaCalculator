@@ -28,13 +28,9 @@ Multiplication (*)
 Division (/)
 Square root (sqrt)
 Power (^)
-Logarithm (log)
+Modulo (%)
 Contributing
 If you find a bug or have a feature request, please open an issue on GitHub. Pull requests are also welcome.
-
-# License
-
-The Java Calculator is licensed under the MIT License. See the LICENSE file for details.
 
 # Acknowledgments
 
